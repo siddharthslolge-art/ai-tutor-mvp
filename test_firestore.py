@@ -1,5 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
@@ -15,7 +16,7 @@ def test_per_company_data():
     company_employees("globex").document("e3").set({"name": "Mia", "role": "analyst"})
 
     # 2. Query: only analysts in acme
-    results = company_employees("acme").where("role", "==", "analyst").stream()
+    results = company_employees("acme").where(filter=FieldFilter("role", "==", "analyst")).stream()
     names = [d.to_dict()["name"] for d in results]
     assert names == ["Asha"], f"Unexpected result: {names}"
 
